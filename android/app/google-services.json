@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "277952387396",
+    "project_id": "mynotes-flutter-project-thebao",
+    "storage_bucket": "mynotes-flutter-project-thebao.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277952387396:android:ec8cab8b81301b64a59f11",
+        "android_client_info": {
+          "package_name": "vn.hellovietname.mynotes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD441-IZmTChjYfuWx-rAIAANkUGxjJJvc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

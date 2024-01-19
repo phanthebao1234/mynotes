@@ -30,6 +30,9 @@ class _RegisterViewState extends State<RegisterView> {
     super.dispose();
   }
 // => Phải đi 1 cặp
+// trong FutureBuiler sẽ có 2 thằng là future và builder
+// Trong đó futture: Tính toán bất đồng bộ mà trình tạo này hiện đang kết nối, có thể là rỗng. => nói chung là xử lý bất đồng bộ
+// TOD      builder: Chiến lược xây dựng hiện đang được người xây dựng này sử dụng. => Code giao diện thì đi vô đây
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +42,6 @@ class _RegisterViewState extends State<RegisterView> {
         backgroundColor: Colors.blue[400],
       ),
       body: FutureBuilder(
-          // trong FutureBuiler sẽ có 2 thằng là future và builder
-          // Trong đó futture: Tính toán bất đồng bộ mà trình tạo này hiện đang kết nối, có thể là rỗng. => nói chung là xử lý bất đồng bộ
-          // TOD      builder: Chiến lược xây dựng hiện đang được người xây dựng này sử dụng. => Code giao diện thì đi vô đây
           future: Firebase.initializeApp(
             options: DefaultFirebaseOptions.currentPlatform,
           ),
@@ -94,6 +94,12 @@ class _RegisterViewState extends State<RegisterView> {
                         }
                       },
                       child: const Text("Register")),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            '/login/', (route) => false);
+                      },
+                      child: const Text("Login account"))
                 ]);
               default:
                 return const Text('Loading...');

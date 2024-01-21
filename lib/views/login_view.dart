@@ -67,6 +67,9 @@ class _HomePageState extends State<LoginView> {
                           email: email, password: password);
                   print(userCredential);
                   print('Đăng nhập thành công');
+
+                  // Nếu đăng nhập thành công sẽ quay về trang chủ
+                  Navigator.pushReplacementNamed(context, '/');
                 } on FirebaseAuthException catch (e) {
                   print(e.code);
                   switch (e.code) {

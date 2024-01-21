@@ -5,9 +5,11 @@ import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/verify_email.dart';
+import 'dart:developer' as devtools show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
   runApp(MaterialApp(
     title: 'Flutter Demo',
     theme: ThemeData(
@@ -22,6 +24,8 @@ void main() {
     },
   ));
 }
+
+enum MenuAction { logout, settings }
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -42,24 +46,106 @@ class HomePage extends StatelessWidget {
               final user = FirebaseAuth.instance.currentUser;
               if (user != null) {
                 if (user.emailVerified) {
-                  print("Email is verified");
+                  return const NotesView();
                 } else {
-                  return const VerifyEmailView();
+                  return const LoginView();
                 }
               } else {
                 return const LoginView();
               }
-              return const Text('Done');
-            // return const LoginView();
-            // if (user?.emailVerified ?? false) {
-            //   return const Text('Done');
-            // } else {
-            //   print(user);
-            //   return const VerifyEmailView();
-            // }
             default:
               return const CircularProgressIndicator();
           }
         });
   }
+}
+
+class NotesView extends StatefulWidget {
+  const NotesView({super.key});
+
+  @override
+  State<NotesView> createState() => _NotesViewState();
+}
+
+class _NotesViewState extends State<NotesView> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Notes View Main UI"),
+        backgroundColor: Colors.blue[400],
+        actions: [
+          PopupMenuButton<MenuAction>(
+            onSelected: (value) async {
+              devtools.log(value.toString());
+              switch (value) {
+                case MenuAction.logout:
+                  final shouldLogout = await showLogOutDialog(context);
+                  devtools.log(shouldLogout.toString());
+
+                  if (shouldLogout) {
+                    await FirebaseAuth.instance.signOut();
+                    // Sau khi sign out thành công ta sẽ qua lại trang chủ
+                    // có 2 cách sau:
+                    // Cách 1:
+                    // Navigator.pushReplacementNamed(context, '/');
+                    // Cách 2:
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('/', (_) => false);
+                    print('Sign out successfully');
+                  } else {
+                    print('Huy dang xuat');
+                  }
+                  break;
+                case MenuAction.settings:
+                  print('Chuyển đến phần cài đặt');
+                  break;
+                default:
+              }
+            },
+            itemBuilder: (context) {
+              return [
+                const PopupMenuItem<MenuAction>(
+                  value: MenuAction.logout,
+                  child: Text('Log out'),
+                ),
+                const PopupMenuItem<MenuAction>(
+                  value: MenuAction.settings,
+                  child: Text('Settings'),
+                )
+              ];
+            },
+          )
+        ],
+      ),
+      body: const Text('Hello World'),
+    );
+  }
+}
+
+Future<bool> showLogOutDialog(BuildContext context) {
+  return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Sign out'),
+          content: const Text('Are you sure you want to sign out ?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text('Sign out'),
+            ),
+            TextButton(
+              onPressed: () {
+                final user = FirebaseAuth.instance.currentUser;
+                print(user);
+                Navigator.of(context).pop(false);
+              },
+              child: const Text('Cancel'),
+            )
+          ],
+        );
+      }).then((value) => value ?? false);
 }

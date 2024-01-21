@@ -37,74 +37,65 @@ class _RegisterViewState extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Register"),
-        backgroundColor: Colors.blue[400],
-      ),
-      body: FutureBuilder(
-          future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform,
+        appBar: AppBar(
+          title: const Text("Register"),
+          backgroundColor: Colors.blue[400],
+        ),
+        body: Column(children: [
+          TextField(
+            controller: _email,
+            enableSuggestions: false,
+            autocorrect: false,
+            keyboardType: TextInputType.emailAddress,
+            decoration:
+                const InputDecoration(hintText: 'Please input you email...'),
           ),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                return Column(children: [
-                  TextField(
-                    controller: _email,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                        hintText: 'Please input you email...'),
-                  ),
-                  TextField(
-                    controller: _password,
-                    obscureText: true, // Cái này là ẩn mật khẩu
-                    enableSuggestions:
-                        false, // Cái này là hiện đề xuất, mặc định là true
-                    autocorrect: false, // tính năng sửa lỗi
-                    // Thông thường ta sẽ dùng 3 cái trên cho password
-                    decoration: const InputDecoration(
-                        hintText: 'Please input you password...'),
-                  ),
-                  TextButton(
-                      onPressed: () async {
-                        final email = _email.text;
-                        final password = _password.text;
-                        try {
-                          final userCredential = await FirebaseAuth.instance
-                              .createUserWithEmailAndPassword(
-                            email: email,
-                            password: password,
-                          );
-                          print(userCredential);
-                        } on FirebaseAuthException catch (e) {
-                          switch (e.code) {
-                            case 'weak-password':
-                              print('Mật khẩu quá yếu');
-                              break;
-                            case 'email-already-in-use':
-                              print('Tài khoản email đã tồn tại');
-                              break;
-                            case 'invalid-email':
-                              print('Tài khoản email không hợp lệ');
-                            default:
-                          }
-                          print(e);
-                        }
-                      },
-                      child: const Text("Register")),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/login/', (route) => false);
-                      },
-                      child: const Text("Login account"))
-                ]);
-              default:
-                return const Text('Loading...');
-            }
-          }),
-    );
+          TextField(
+            controller: _password,
+            obscureText: true, // Cái này là ẩn mật khẩu
+            enableSuggestions:
+                false, // Cái này là hiện đề xuất, mặc định là true
+            autocorrect: false, // tính năng sửa lỗi
+            // Thông thường ta sẽ dùng 3 cái trên cho password
+            decoration:
+                const InputDecoration(hintText: 'Please input you password...'),
+          ),
+          TextButton(
+              onPressed: () async {
+                final email = _email.text;
+                final password = _password.text;
+                try {
+                  final userCredential = await FirebaseAuth.instance
+                      .createUserWithEmailAndPassword(
+                    email: email,
+                    password: password,
+                  );
+                  print(userCredential);
+
+                  // Sau khi đăng kí thành công sẽ quay về trang đăng nhập
+                  Navigator.pushReplacementNamed(context, '/login/');
+                } on FirebaseAuthException catch (e) {
+                  switch (e.code) {
+                    case 'weak-password':
+                      print('Mật khẩu quá yếu');
+                      break;
+                    case 'email-already-in-use':
+                      print('Tài khoản email đã tồn tại');
+                      break;
+                    case 'invalid-email':
+                      print('Tài khoản email không hợp lệ');
+                    default:
+                  }
+                  print(e);
+                }
+              },
+              child: const Text("Register")),
+          TextButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/login/', (route) => false);
+              },
+              child: const Text("Login account"))
+        ]));
   }
 }

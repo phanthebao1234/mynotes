@@ -5,7 +5,6 @@ import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/verify_email.dart';
-import 'dart:developer' as devtools show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +20,7 @@ void main() {
       '/login/': (context) => const LoginView(),
       '/register/': (context) => const RegisterView(),
       // '/logout': (context) => const LogoutView(),
+      '/notes/': (context) => const NotesView(),
     },
   ));
 }
@@ -48,7 +48,7 @@ class HomePage extends StatelessWidget {
                 if (user.emailVerified) {
                   return const NotesView();
                 } else {
-                  return const LoginView();
+                  return const VerifyEmailView();
                 }
               } else {
                 return const LoginView();
@@ -77,12 +77,9 @@ class _NotesViewState extends State<NotesView> {
         actions: [
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
-              devtools.log(value.toString());
               switch (value) {
                 case MenuAction.logout:
                   final shouldLogout = await showLogOutDialog(context);
-                  devtools.log(shouldLogout.toString());
-
                   if (shouldLogout) {
                     await FirebaseAuth.instance.signOut();
                     // Sau khi sign out thành công ta sẽ qua lại trang chủ
@@ -90,15 +87,12 @@ class _NotesViewState extends State<NotesView> {
                     // Cách 1:
                     // Navigator.pushReplacementNamed(context, '/');
                     // Cách 2:
+                    if (!context.mounted) return;
                     Navigator.of(context)
                         .pushNamedAndRemoveUntil('/', (_) => false);
-                    print('Sign out successfully');
-                  } else {
-                    print('Huy dang xuat');
                   }
                   break;
                 case MenuAction.settings:
-                  print('Chuyển đến phần cài đặt');
                   break;
                 default:
               }
@@ -139,8 +133,6 @@ Future<bool> showLogOutDialog(BuildContext context) {
             ),
             TextButton(
               onPressed: () {
-                final user = FirebaseAuth.instance.currentUser;
-                print(user);
                 Navigator.of(context).pop(false);
               },
               child: const Text('Cancel'),

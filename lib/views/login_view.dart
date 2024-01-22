@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 // import 'package:mynotes/firebase_options.dart';
+import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -65,25 +66,29 @@ class _HomePageState extends State<LoginView> {
                   final userCredential = await FirebaseAuth.instance
                       .signInWithEmailAndPassword(
                           email: email, password: password);
-                  print(userCredential);
-                  print('Đăng nhập thành công');
+                  devtools.log(userCredential.toString());
+                  devtools.log('Đăng nhập thành công');
 
                   // Nếu đăng nhập thành công sẽ quay về trang chủ
-                  Navigator.pushReplacementNamed(context, '/');
+                  if (!context.mounted) return;
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/notes/',
+                    (route) => false,
+                  );
                 } on FirebaseAuthException catch (e) {
-                  print(e.code);
+                  (e.code);
                   switch (e.code) {
                     case 'user-not-found':
-                      print("Tài khoản không tồn tại");
+                      devtools.log("Tài khoản không tồn tại");
                       break;
                     case 'invalid-email':
-                      print('Email không hợp lệ');
+                      devtools.log('Email không hợp lệ');
                       break;
                     case 'wrong-password':
-                      print('Sai mật khẩu');
+                      devtools.log('Sai mật khẩu');
                       break;
                     default:
-                      print("Xuất hiện một lỗi nào đó");
+                      devtools.log("Xuất hiện một lỗi nào đó");
                   }
                 }
               },

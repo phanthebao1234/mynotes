@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mynotes/firebase_options.dart';
+// import 'package:mynotes/firebase_options.dart';
+import 'dart:developer' as devtools show log;
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -70,23 +71,26 @@ class _RegisterViewState extends State<RegisterView> {
                     email: email,
                     password: password,
                   );
-                  print(userCredential);
 
+                  devtools.log(userCredential.toString());
                   // Sau khi đăng kí thành công sẽ quay về trang đăng nhập
-                  Navigator.pushReplacementNamed(context, '/login/');
+                  // Navigator.pushReplacementNamed(context, '/login/');
+                  if (!context.mounted) return;
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/login/', (route) => false);
                 } on FirebaseAuthException catch (e) {
                   switch (e.code) {
                     case 'weak-password':
-                      print('Mật khẩu quá yếu');
+                      devtools.log('Mật khẩu quá yếu');
                       break;
                     case 'email-already-in-use':
-                      print('Tài khoản email đã tồn tại');
+                      devtools.log('Tài khoản email đã tồn tại');
                       break;
                     case 'invalid-email':
-                      print('Tài khoản email không hợp lệ');
+                      devtools.log('Tài khoản email không hợp lệ');
                     default:
                   }
-                  print(e);
+                  devtools.log(e.toString());
                 }
               },
               child: const Text("Register")),

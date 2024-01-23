@@ -13,10 +13,16 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Verify Email')),
+      appBar: AppBar(
+        title: const Text('Verify Email'),
+        backgroundColor: Colors.blue[400],
+      ),
       body: Column(
         children: [
-          const Text("Please Verify Email address"),
+          const Text(
+              "Chúng tôi đã gửi email xác nhận tài khoản cho bạn. Hãy mở email và kiểm tra nó"),
+          const Text(
+              "Nếu bạn chưa nhận được email xác minh, hãy nhấn vào đây."),
           TextButton(
             onPressed: () async {
               final user = FirebaseAuth.instance.currentUser;
@@ -32,7 +38,18 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               );
             },
             child: const Text('Login Account'),
-          )
+          ),
+          TextButton(
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              if (!context.mounted) return;
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                registerRoute,
+                (route) => false,
+              );
+            },
+            child: const Text("Restart"),
+          ),
         ],
       ),
     );

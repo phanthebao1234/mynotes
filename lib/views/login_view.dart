@@ -84,21 +84,18 @@ class _HomePageState extends State<LoginView> {
                         context,
                         "User not found",
                       );
-                      devtools.log("Tài khoản không tồn tại");
                       break;
                     case 'invalid-email':
                       await showErrorDialog(
                         context,
                         'Invalid email',
                       );
-                      devtools.log('Email không hợp lệ');
                       break;
                     case 'wrong-password':
                       await showErrorDialog(
                         context,
                         'Wrong password',
                       );
-                      devtools.log('Sai mật khẩu');
                       break;
                     case 'user-disabled':
                       await showErrorDialog(
@@ -111,12 +108,11 @@ class _HomePageState extends State<LoginView> {
                         context,
                         'Error: ${e.code}',
                       );
-                      devtools.log("Xuất hiện một lỗi nào đó");
                   }
                 } catch (e) {
                   await showErrorDialog(
                     context,
-                    'Error: ${e.toString()}',
+                    e.toString(),
                   );
                 }
               },

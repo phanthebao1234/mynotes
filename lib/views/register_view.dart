@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -68,33 +69,44 @@ class _RegisterViewState extends State<RegisterView> {
                 final email = _email.text;
                 final password = _password.text;
                 try {
-                  final userCredential = await FirebaseAuth.instance
-                      .createUserWithEmailAndPassword(
+                  await FirebaseAuth.instance.createUserWithEmailAndPassword(
                     email: email,
                     password: password,
                   );
-
-                  devtools.log(userCredential.toString());
-                  // Sau khi đăng kí thành công sẽ quay về trang đăng nhập
-                  // Navigator.pushReplacementNamed(context, '/login/');
                   if (!context.mounted) return;
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    loginRoute,
-                    (route) => false,
-                  );
+                  final user = FirebaseAuth.instance.currentUser;
+                  user?.sendEmailVerification();
+                  Navigator.of(context).pushNamed(verifyEmailRoute);
                 } on FirebaseAuthException catch (e) {
+                  if (!context.mounted) return;
                   switch (e.code) {
                     case 'weak-password':
-                      devtools.log('Mật khẩu quá yếu');
+                      await showErrorDialog(
+                        context,
+                        'Weak password',
+                      );
                       break;
                     case 'email-already-in-use':
-                      devtools.log('Tài khoản email đã tồn tại');
+                      await showErrorDialog(context, 'Email already in use,');
                       break;
                     case 'invalid-email':
-                      devtools.log('Tài khoản email không hợp lệ');
+                      await showErrorDialog(
+                        context,
+                        'Invalid email',
+                      );
                     default:
                   }
+                  if (!context.mounted) return;
+                  await showErrorDialog(
+                    context,
+                    'Error: ${e.code}',
+                  );
                   devtools.log(e.toString());
+                } catch (e) {
+                  await showErrorDialog(
+                    context,
+                    e.toString(),
+                  );
                 }
               },
               child: const Text("Register")),
@@ -103,7 +115,8 @@ class _RegisterViewState extends State<RegisterView> {
                 Navigator.of(context)
                     .pushNamedAndRemoveUntil(loginRoute, (route) => false);
               },
-              child: const Text("Login account"))
+              child: const Text("Login account")),
+          
         ]));
   }
 }

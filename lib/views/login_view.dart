@@ -1,10 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-// import 'package:mynotes/firebase_options.dart';
 import 'dart:developer' as devtools show log;
-
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -79,19 +77,47 @@ class _HomePageState extends State<LoginView> {
                   );
                 } on FirebaseAuthException catch (e) {
                   (e.code);
+                  if (!context.mounted) return;
                   switch (e.code) {
                     case 'user-not-found':
+                      await showErrorDialog(
+                        context,
+                        "User not found",
+                      );
                       devtools.log("Tài khoản không tồn tại");
                       break;
                     case 'invalid-email':
+                      await showErrorDialog(
+                        context,
+                        'Invalid email',
+                      );
                       devtools.log('Email không hợp lệ');
                       break;
                     case 'wrong-password':
+                      await showErrorDialog(
+                        context,
+                        'Wrong password',
+                      );
                       devtools.log('Sai mật khẩu');
                       break;
+                    case 'user-disabled':
+                      await showErrorDialog(
+                        context,
+                        'User disabled',
+                      );
+                      break;
                     default:
+                      await showErrorDialog(
+                        context,
+                        'Error: ${e.code}',
+                      );
                       devtools.log("Xuất hiện một lỗi nào đó");
                   }
+                } catch (e) {
+                  await showErrorDialog(
+                    context,
+                    'Error: ${e.toString()}',
+                  );
                 }
               },
               child: const Text("Login")),

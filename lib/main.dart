@@ -83,11 +83,6 @@ class _NotesViewState extends State<NotesView> {
                   final shouldLogout = await showLogOutDialog(context);
                   if (shouldLogout) {
                     await FirebaseAuth.instance.signOut();
-                    // Sau khi sign out thành công ta sẽ qua lại trang chủ
-                    // có 2 cách sau:
-                    // Cách 1:
-                    // Navigator.pushReplacementNamed(context, '/');
-                    // Cách 2:
                     if (!context.mounted) return;
                     Navigator.of(context)
                         .pushNamedAndRemoveUntil(loginRoute, (_) => false);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/utilities/show_error_dialog.dart';
+import 'package:mynotes/views/verify_email.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -63,18 +64,27 @@ class _HomePageState extends State<LoginView> {
                 final email = _email.text;
                 final password = _password.text;
                 try {
-                  final userCredential = await FirebaseAuth.instance
-                      .signInWithEmailAndPassword(
-                          email: email, password: password);
-                  devtools.log(userCredential.toString());
-                  devtools.log('Đăng nhập thành công');
-
-                  // Nếu đăng nhập thành công sẽ quay về trang chủ
-                  if (!context.mounted) return;
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    notesRoute,
-                    (route) => false,
+                  final userCredential =
+                      await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    email: email,
+                    password: password,
                   );
+                  devtools.log(userCredential.toString());
+
+                  final user = FirebaseAuth.instance.currentUser;
+                  
+                  if (user?.emailVerified ?? false) {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      notesRoute,
+                      (route) => false,
+                    );
+                  } else {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      verifyEmailRoute,
+                      (route) => false,
+                    );
+                  }
+               
                 } on FirebaseAuthException catch (e) {
                   (e.code);
                   if (!context.mounted) return;

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/utilities/show_error_dialog.dart';
-import 'package:mynotes/views/verify_email.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});

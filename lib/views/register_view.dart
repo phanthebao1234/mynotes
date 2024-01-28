@@ -1,10 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-// import 'package:mynotes/firebase_options.dart';
-import 'dart:developer' as devtools show log;
+// ignore_for_file: use_build_context_synchronously
 
+import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -69,39 +70,32 @@ class _RegisterViewState extends State<RegisterView> {
                 final email = _email.text;
                 final password = _password.text;
                 try {
-                  await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                  await AuthService.firebase().createUser(
                     email: email,
                     password: password,
                   );
-                  if (!context.mounted) return;
-                  final user = FirebaseAuth.instance.currentUser;
-                  user?.sendEmailVerification();
+                  AuthService.firebase().sendEmailVerification();
                   Navigator.of(context).pushNamed(verifyEmailRoute);
-                } on FirebaseAuthException catch (e) {
-                  if (!context.mounted) return;
-                  switch (e.code) {
-                    case 'weak-password':
-                      await showErrorDialog(
-                        context,
-                        'Weak password',
-                      );
-                      break;
-                    case 'email-already-in-use':
-                      await showErrorDialog(context, 'Email already in use,');
-                      break;
-                    case 'invalid-email':
-                      await showErrorDialog(
-                        context,
-                        'Invalid email',
-                      );
-                    default:
-                  }
-                  if (!context.mounted) return;
+                } on WeakPasswordAuthException {
                   await showErrorDialog(
                     context,
-                    'Error: ${e.code}',
+                    'Weak password',
                   );
-                  devtools.log(e.toString());
+                } on InvalidEmailAuthException {
+                  await showErrorDialog(
+                    context,
+                    'Invalid email',
+                  );
+                } on UserAlreadyInUseAuthException {
+                  await showErrorDialog(
+                    context,
+                    'Email already in use',
+                  );
+                } on GenericAuthException {
+                  await showErrorDialog(
+                    context,
+                    'Authentication error ',
+                  );
                 } catch (e) {
                   await showErrorDialog(
                     context,
@@ -116,7 +110,6 @@ class _RegisterViewState extends State<RegisterView> {
                     .pushNamedAndRemoveUntil(loginRoute, (route) => false);
               },
               child: const Text("Login account")),
-          
         ]));
   }
 }

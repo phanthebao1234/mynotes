@@ -99,8 +99,8 @@ class _NewNoteViewState extends State<NewNoteView> {
                 controller: _textController,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
-                decoration:
-                    const InputDecoration(hintText: "String typing  your note"),
+                decoration: const InputDecoration(
+                    hintText: "String typing  your note........."),
               );
 
             default:

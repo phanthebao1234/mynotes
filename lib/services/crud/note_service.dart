@@ -14,13 +14,12 @@ class NotesService {
 
   static final NotesService _shared = NotesService._sharedInstance();
   NotesService._sharedInstance() {
-    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
-      onListen: () {
-        _notesStreamController.sink.add(_notes);
-      }
-    );
+    _notesStreamController =
+        StreamController<List<DatabaseNote>>.broadcast(onListen: () {
+      _notesStreamController.sink.add(_notes);
+    });
   }
-  
+
   factory NotesService() => _shared;
 
   late final StreamController<List<DatabaseNote>> _notesStreamController;
@@ -165,7 +164,7 @@ class NotesService {
       whereArgs: [email.toLowerCase()],
     );
 
-    if (results.isNotEmpty) {
+    if (results.isEmpty) {
       throw CouldNotFindUser();
     } else {
       return DatabaseUser.fromRow(results.first);
@@ -187,7 +186,10 @@ class NotesService {
     final userId = await db.insert(userTable, {
       emailColumn: email.toLowerCase(),
     });
-    return DatabaseUser(id: userId, email: email);
+    return DatabaseUser(
+      id: userId,
+      email: email,
+    );
   }
 
   Future<void> deleteUser({required String email}) async {
@@ -223,7 +225,7 @@ class NotesService {
 
   Future<void> open() async {
     if (_db != null) {
-      throw DatabaseAlreadyOpenException;
+      throw DatabaseAlreadyOpenException();
     }
     try {
       final docsPath = await getApplicationDocumentsDirectory();
@@ -268,7 +270,7 @@ class DatabaseUser {
         email = map[emailColumn] as String;
 
   @override
-  String toString() => 'Person, ID = $id, Email = $email';
+  String toString() => 'Person, ID = $id, email = $email';
 
   @override
   bool operator ==(covariant DatabaseUser other) => id == other.id;
@@ -298,7 +300,7 @@ class DatabaseNote {
 
   @override
   String toString() =>
-      'Note, ID = $id, User Id = $userId, Text = $text, isSyncedWithCloud = $isSyncedWithCloud';
+      'Note, ID = $id, userId = $userId, isSyncedWithCloud = $isSyncedWithCloud, text = $text';
 
   @override
   bool operator ==(covariant DatabaseNote other) => id == other.id;

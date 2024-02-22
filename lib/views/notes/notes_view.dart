@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/enums/menu_action.dart';
@@ -21,7 +20,6 @@ class _NotesViewState extends State<NotesView> {
   @override
   void initState() {
     _notesService = NotesService();
-    _notesService.open();
     super.initState();
   }
 
@@ -34,7 +32,7 @@ class _NotesViewState extends State<NotesView> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(newNoteRoute);
+              Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
             },
             icon: const Icon(Icons.add),
           ),
@@ -44,10 +42,12 @@ class _NotesViewState extends State<NotesView> {
                 case MenuAction.logout:
                   final shouldLogout = await showLogOutDialog(context);
                   if (shouldLogout) {
-                    await FirebaseAuth.instance.signOut();
+                    await AuthService.firebase().logOut();
                     if (!context.mounted) return;
-                    Navigator.of(context)
-                        .pushNamedAndRemoveUntil(loginRoute, (_) => false);
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      loginRoute,
+                      (_) => false,
+                    );
                   }
                   break;
                 case MenuAction.settings:
@@ -56,12 +56,12 @@ class _NotesViewState extends State<NotesView> {
               }
             },
             itemBuilder: (context) {
-              return [
-                const PopupMenuItem<MenuAction>(
+              return const [
+                PopupMenuItem<MenuAction>(
                   value: MenuAction.logout,
                   child: Text('Log out'),
                 ),
-                const PopupMenuItem<MenuAction>(
+                PopupMenuItem<MenuAction>(
                   value: MenuAction.settings,
                   child: Text('Settings'),
                 )
@@ -79,14 +79,20 @@ class _NotesViewState extends State<NotesView> {
                   stream: _notesService.allNotes,
                   builder: (context, snapshot) {
                     switch (snapshot.connectionState) {
-                      case ConnectionState.active:
                       case ConnectionState.waiting:
+                      case ConnectionState.active:
                         if (snapshot.hasData) {
                           final allNotes = snapshot.data as List<DatabaseNote>;
                           return NotesListView(
                             notes: allNotes,
                             onDeleteNote: (note) async {
                               await _notesService.deleteNote(id: note.id);
+                            },
+                            onTab: (note) {
+                              Navigator.of(context).pushNamed(
+                                createOrUpdateNoteRoute,
+                                arguments: note,
+                              );
                             },
                           );
                         } else {

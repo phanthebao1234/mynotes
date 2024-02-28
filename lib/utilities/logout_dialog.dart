@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mynotes/utilities/generic_dialog.dart';
 
 Future<bool> showLogOutDialog(BuildContext context) {
-  return showGenericDialog(
+  return showGenericDialog<bool>(
     context: context,
     title: 'Log out',
     content: "Are you sure you want to log out?",
@@ -10,5 +10,7 @@ Future<bool> showLogOutDialog(BuildContext context) {
       'Cancel': false,
       'Logout': true,
     },
-  ).then((value) => value ?? false);
+  ).then(
+    (value) => value ?? false,
+  );
 }

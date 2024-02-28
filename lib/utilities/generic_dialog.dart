@@ -9,7 +9,7 @@ Future<T?> showGenericDialog<T>({
   required DialogOptionBuilder optionsBuilder,
 }) {
   final options = optionsBuilder();
-  return showDialog(
+  return showDialog<T>(
       context: context,
       builder: (context) {
         return AlertDialog(

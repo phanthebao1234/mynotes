@@ -8,10 +8,10 @@ class CloudStorageException implements Exception {
 class CouldNotCreateNoteStorageException implements CloudStorageException {}
 
 // R
-class CouldNotGetAllNotesStorage implements CloudStorageException {}
+class CouldNotGetAllNotesException implements CloudStorageException {}
 
 // U
-class CouldNotUpdateNoteStorage implements CloudStorageException {}
+class CouldNotUpdateNoteException implements CloudStorageException {}
 
 // D
-class CouldNotDeleteNoteStorage implements CloudStorageException {}
+class CouldNotDeleteNoteException implements CloudStorageException {}

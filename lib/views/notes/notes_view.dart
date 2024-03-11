@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,13 +48,10 @@ class _NotesViewState extends State<NotesView> {
               switch (value) {
                 case MenuAction.logout:
                   final shouldLogout = await showLogOutDialog(context);
-                  if (shouldLogout) {
-                    context.read<AuthBloc>().add(const AuthEventLogOut());
-                    // await AuthService.firebase().logOut();
-                    // Navigator.of(context).pushNamedAndRemoveUntil(
-                    //   loginRoute,
-                    //   (_) => false,
-                    // );
+                  if (shouldLogout && context.mounted) {
+                    context.read<AuthBloc>().add(
+                          const AuthEventLogOut(),
+                        );
                   }
                   break;
                 case MenuAction.settings:
@@ -109,31 +104,3 @@ class _NotesViewState extends State<NotesView> {
     );
   }
 }
-
-// StreamBuilder(
-//                   stream: _notesService.allNotes,
-//                   builder: (context, snapshot) {
-//                     switch (snapshot.connectionState) {
-//                       case ConnectionState.waiting:
-//                       case ConnectionState.active:
-//                         if (snapshot.hasData) {
-//                           final allNotes = snapshot.data as List<DatabaseNote>;
-//                           return NotesListView(
-//                             notes: allNotes,
-//                             onDeleteNote: (note) async {
-//                               await _notesService.deleteNote(id: note.id);
-//                             },
-//                             onTab: (note) {
-//                               Navigator.of(context).pushNamed(
-//                                 createOrUpdateNoteRoute,
-//                                 arguments: note,
-//                               );
-//                             },
-//                           );
-//                         } else {
-//                           return const CircularProgressIndicator();
-//                         }
-//                       default:
-//                         return const CircularProgressIndicator();
-//                     }
-//                   });

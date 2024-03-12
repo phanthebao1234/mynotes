@@ -56,7 +56,7 @@ class _HomePageState extends State<LoginView> {
           if (state.exception is UserNotFoundException) {
             await showErrorDialog(
               context,
-              "user not found",
+              "Cannot find a user with the entered credentials",
             );
           } else if (state.exception is WrongPasswordException) {
             await showErrorDialog(
@@ -76,38 +76,48 @@ class _HomePageState extends State<LoginView> {
             title: const Text('Login'),
             backgroundColor: Colors.blue[400],
           ),
-          body: Column(children: [
-            TextField(
-              controller: _email,
-              enableSuggestions: false,
-              autocorrect: false,
-              keyboardType: TextInputType.emailAddress,
-              decoration:
-                  const InputDecoration(hintText: 'Please input you email...'),
-            ),
-            TextField(
-              controller: _password,
-              obscureText: true, // Cái này là ẩn mật khẩu
-              enableSuggestions:
-                  false, // Cái này là hiện đề xuất, mặc định là true
-              autocorrect: false, // tính năng sửa lỗi
-              // Thông thường ta sẽ dùng 3 cái trên cho password
-              decoration: const InputDecoration(
-                  hintText: 'Please input you password...'),
-            ),
-            TextButton(
-                onPressed: () async {
-                  final email = _email.text;
-                  final password = _password.text;
-                  context.read<AuthBloc>().add(
-                        AuthEventLogIn(
-                          email,
-                          password,
-                        ),
-                      );
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(children: [
+              const Text(
+                  'Please log in your account in order to inherit with and create notes!'),
+              TextField(
+                controller: _email,
+                enableSuggestions: false,
+                autocorrect: false,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                    hintText: 'Please input you email...'),
+              ),
+              TextField(
+                controller: _password,
+                obscureText: true, // Cái này là ẩn mật khẩu
+                enableSuggestions:
+                    false, // Cái này là hiện đề xuất, mặc định là true
+                autocorrect: false, // tính năng sửa lỗi
+                // Thông thường ta sẽ dùng 3 cái trên cho password
+                decoration: const InputDecoration(
+                    hintText: 'Please input you password...'),
+              ),
+              TextButton(
+                  onPressed: () async {
+                    final email = _email.text;
+                    final password = _password.text;
+                    context.read<AuthBloc>().add(
+                          AuthEventLogIn(
+                            email,
+                            password,
+                          ),
+                        );
+                  },
+                  child: const Text("Login")),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(const AuthEventForgotPassword());
                 },
-                child: const Text("Login")),
-            TextButton(
+                child: const Text('I forgot password'),
+              ),
+              TextButton(
                 onPressed: () {
                   context.read<AuthBloc>().add(const AuthEventShoutRegister());
                 },
@@ -115,8 +125,10 @@ class _HomePageState extends State<LoginView> {
                   'Not registered yet ? Register here!',
                   selectionColor: Color.fromARGB(255, 11, 137, 240),
                   style: TextStyle(fontStyle: FontStyle.italic),
-                ))
-          ])),
+                ),
+              ),
+            ]),
+          )),
     );
   }
 }

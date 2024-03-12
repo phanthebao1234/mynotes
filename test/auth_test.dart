@@ -66,6 +66,10 @@ void main() {
       final user = provider.currentUser;
       expect(user, isNotNull);
     });
+
+    test('send password reset email', () async {
+      await provider.sendPasswordReset(toEmail: 'phanthebao888@gmail.com');
+    });
   });
 }
 
@@ -133,5 +137,13 @@ class MockAuthProvider implements AuthProvider {
       email: 'phanthebao888@gmail.com',
     );
     _user = newUser;
+  }
+
+  @override
+  Future<void> sendPasswordReset({required String toEmail}) {
+    if (!isInitialized) throw NotInitializedException();
+    if (toEmail == 'phanthebao888@gmail.com') throw UserNotFoundException();
+
+    throw UnimplementedError();
   }
 }

@@ -5,6 +5,11 @@ abstract class AuthEvent {
   const AuthEvent();
 }
 
+class AuthEventForgotPassword extends AuthEvent {
+  final String? email;
+  const AuthEventForgotPassword({this.email});
+}
+
 class AuthEventInitialize extends AuthEvent {
   const AuthEventInitialize();
 }

@@ -20,8 +20,8 @@ class AuthEventLogOut extends AuthEvent {
   const AuthEventLogOut();
 }
 
-class AuthEventSendVerification extends AuthEvent {
-  const AuthEventSendVerification();
+class AuthEventSendEmailVerification extends AuthEvent {
+  const AuthEventSendEmailVerification();
 }
 
 class AuthEventRegister extends AuthEvent {

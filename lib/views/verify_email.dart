@@ -29,12 +29,11 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           TextButton(
             onPressed: () async {
               context.read<AuthBloc>().add(
-                    const AuthEventSendVerification(),
+                    const AuthEventSendEmailVerification(),
                   );
             },
             child: const Text("Send Email Verification"),
           ),
-          
           TextButton(
             onPressed: () async {
               context.read<AuthBloc>().add(
